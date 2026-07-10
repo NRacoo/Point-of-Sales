@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { ShoppingCart, BarChart3 } from 'lucide-react';
-import type { SessionPayload } from '@/lib/auth';
+import type { SessionPayload } from '@/lib/interface/auth';
 
 interface Props {
   user: SessionPayload | null;

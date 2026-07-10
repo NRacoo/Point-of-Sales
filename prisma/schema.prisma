@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum order_status {
+  pending
+  completed
+  cancelled
+}
+
+enum product_status {
+  in_stock
+  out_stock
+}
+
+enum payment_method {
+  cash
+  QRIS
+  card
+}
+
+enum Role {
+  user
+  admin
+}
+
+model User {
+  id           String @id @default(uuid())
+  fullName     String
+  password     String
+  phoneNumber  String
+  email        String @unique
+  image        String
+  role         Role   @default(user)
+  token        String
+  access_token String
+
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orders  Order[]
+}
+
+model Store {
+  id          String @id @default(uuid())
+  name        String
+  address     String
+  phoneNumber String @unique
+
+  products Product[]
+  users    User[]
+  orders   Order[]
+}
+
+model Product {
+  id           String @id @default(uuid())
+  product_name String @unique
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  stock         String
+  reorder_level String
+  price         String
+  status        product_status @default(in_stock)
+  last_updated  DateTime       @default(now())
+
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id])
+
+  orderItem OrderItem[]
+}
+
+model Category {
+  id            String @id @default(uuid())
+  category_name String @unique
+
+  product Product[]
+}
+
+model Order {
+  id             String         @id @default(uuid())
+  order_number   String         @unique
+  customer_name  String
+  order_date     DateTime       @default(now())
+  total_amount   String
+  payment_method payment_method
+  status         order_status   @default(pending)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id])
+
+  orderItem OrderItem[]
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  quantity      String
+  price_at_sale String
+
+  @@unique([orderId, productId])
+}

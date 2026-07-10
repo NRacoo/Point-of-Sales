@@ -1,7 +1,7 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { parseSessionValue } from './lib/auth';
+import { parseSessionValue } from './lib/interface/auth';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

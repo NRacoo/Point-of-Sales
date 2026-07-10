@@ -1,65 +1,20 @@
+import * as bcrypt from "bcrypt";
+import jwt, { SignOptions }   from "jsonwebtoken";
 
-import { AppUser, UserRole } from './types';
+const ACCESS_SECRET = process.env.JWT_ACCESS_TOKEN;
+const REFRESH_SECRET = process.env.JWT_REFRESH_TOKEN;
+const ACCESS_EXPIRATION = process.env.JWT_ACCESS_EXP;
+const REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXP;
 
-const mockUsers: { username: string; password: string; user: AppUser }[] = [
-  {
-    username: 'admin1',
-    password: '12345678',
-    user: {
-      id: 'u-1',
-      name: 'Admin POS',
-      username: 'admin1',
-      email: 'admin@example.com',
-      role: 'ADMIN',
-    },
-  },
-  {
-    username: 'kasir1',
-    password: '12345678',
-    user: {
-      id: 'u-2',
-      name: 'Kasir 1',
-      username: 'kasir1',
-      email: 'cashier@example.com',
-      role: 'CASHIER',
-    },
-  },
-];
+if(!ACCESS_SECRET || !REFRESH_SECRET || !ACCESS_EXPIRATION || !REFRESH_EXPIRATION === undefined ) {
+    throw new Error("JWT_ACCESS_TOKEN and JWT_REFRESH_TOKEN must be defined in environment variables")
+};
 
-export interface SessionPayload {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  role: UserRole;
-}
+export const hashPassword = (password: string) => bcrypt.hash(password, 10)
+export const comparePassword = (password: string, hash:string) => bcrypt.compare(password, hash);
 
-export async function authenticate(
-  username: string,
-  password: string
-): Promise<AppUser | null> {
-  const found = mockUsers.find(
-    (u) => u.username === username && u.password === password
-  );
-  return found ? found.user : null;
-}
+export const signAccessToken = (payload : { id : string, role: string}) => jwt.sign(payload, ACCESS_SECRET, {expiresIn: ACCESS_EXPIRATION as SignOptions["expiresIn"]});
+export const signRefreshToken = (payload: {id: string}) => jwt.sign(payload, REFRESH_SECRET, {expiresIn: REFRESH_EXPIRATION as SignOptions["expiresIn"]});
 
-export function createSessionValue(user: AppUser): string {
-  const payload: SessionPayload = {
-    id: user.id,
-    name: user.name,
-    username: user.username,
-    email: user.email,
-    role: user.role,
-  };
-  return encodeURIComponent(JSON.stringify(payload));
-}
-
-export function parseSessionValue(value?: string): SessionPayload | null {
-  if (!value) return null;
-  try {
-    return JSON.parse(decodeURIComponent(value)) as SessionPayload;
-  } catch {
-    return null;
-  }
-}
+export const verifyAccessToken = (token:string) => jwt.verify(token, ACCESS_SECRET) as { id: string, token:string };
+export const verifyRefreshToken = (token:string) => jwt.verify(token, REFRESH_SECRET) as { id: string }; 

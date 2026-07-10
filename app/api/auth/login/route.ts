@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { authenticate, createSessionValue } from '@/lib/auth';
+import { authenticate, createSessionValue } from '@/lib/interface/auth';
 
 export async function POST(req: Request) {
   const { username, password } = await req.json();

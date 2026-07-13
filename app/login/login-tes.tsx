@@ -16,7 +16,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -29,8 +29,8 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      const role = data.user.role as 'ADMIN' | 'CASHIER';
-      router.push(role === 'ADMIN' ? '/admin' : '/cashier');
+      const role = data.user.role;
+      router.push(role === 'admin' ? '/admin' : '/cashier');
     } catch (err) {
       setError('Unexpected error');
     } finally {
@@ -39,7 +39,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50 to-orange-100">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-orange-100 p-8">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white font-bold">

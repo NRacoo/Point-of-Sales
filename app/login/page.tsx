@@ -6,9 +6,9 @@ import { useState } from "react";
 
  
 export default function FullScreenSignup () {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -16,8 +16,9 @@ export default function FullScreenSignup () {
   const [error, setError] = useState("");
   const router = useRouter();
  
-  const validateUsername = (value: string) => {
-    return value.trim().length >= 3;
+  const validateEmail = (value: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(value.trim());
   };
  
   const validatePassword = (value: string) => {
@@ -28,13 +29,13 @@ export default function FullScreenSignup () {
     e.preventDefault();
 
     setError("");
-    setUsernameError("");
+    setEmailError("");
     setPasswordError("");
 
     let valid = true;
 
-    if (!validateUsername(username)) {
-      setUsernameError("Please enter your registered username.");
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address");
       valid = false;
     }
 
@@ -48,13 +49,13 @@ export default function FullScreenSignup () {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username,
+          email,
           password,
         }),
       });
@@ -66,15 +67,9 @@ export default function FullScreenSignup () {
         return;
       }
 
-      const role = data.user.role as "ADMIN" | "CASHIER";
+      router.replace("/")
+      router.refresh
 
-      if (role === "ADMIN") {
-        router.push("/admin");
-      } else if (role === "CASHIER") {
-        router.push("/cashier");
-      } else {
-        setError("Unknown user role");
-      }
     } catch (err) {
       setError("Unexpected error");
     } finally {
@@ -88,16 +83,16 @@ export default function FullScreenSignup () {
       <div className=" w-full relative rounded-3xl max-w-5xl overflow-hidden flex flex-col md:flex-row shadow-xl">
         <div className="w-full h-full z-2 absolute bg-linear-to-t from-transparent to-black"></div>
         <div className="flex absolute z-2  overflow-hidden backdrop-blur-2xl ">
-          <div className="h-[40rem] z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30] opacity-30 overflow-hidden"></div>
-          <div className="h-[40rem] z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30]  opacity-30 overflow-hidden"></div>
-          <div className="h-[40rem] z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30]  opacity-30 overflow-hidden"></div>
-          <div className="h-[40rem] z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30]  opacity-30 overflow-hidden"></div>
-          <div className="h-[40rem] z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30]  opacity-30 overflow-hidden"></div>
-          <div className="h-[40rem] z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30]  opacity-30 overflow-hidden"></div>
+          <div className="h-160 z-2 w-16 bg-linear-90 from-[#ffffff00] via-[#000000] via-69% to-[#ffffff30] opacity-30 overflow-hidden"></div>
+          <div className="h-160 z-2 w-16 bg-linear-90 from-[#ffffff00] via-[#000000] via-69% to-[#ffffff30]  opacity-30 overflow-hidden"></div>
+          <div className="h-160 z-2 w-16 bg-linear-90 from-[#ffffff00] via-[#000000] via-69% to-[#ffffff30]  opacity-30 overflow-hidden"></div>
+          <div className="h-160 z-2 w-16 bg-linear-90 from-[#ffffff00] via-[#000000] via-69% to-[#ffffff30]  opacity-30 overflow-hidden"></div>
+          <div className="h-160 z-2 w-16 bg-linear-90 from-[#ffffff00] via-[#000000] via-69% to-[#ffffff30]  opacity-30 overflow-hidden"></div>
+          <div className="h-160 z-2 w-16 bg-linear-90 from-[#ffffff00] via-[#000000] via-69% to-[#ffffff30]  opacity-30 overflow-hidden"></div>
         </div>
-        <div className="w-[15rem] h-[15rem] bg-orange-500 absolute z-1 rounded-full bottom-0"></div>
-        <div className="w-[8rem] h-[5rem] bg-white absolute z-1 rounded-full bottom-0"></div>
-        <div className="w-[8rem] h-[5rem] bg-white absolute z-1 rounded-full bottom-0"></div>
+        <div className="w-60 h-60 bg-orange-500 absolute z-1 rounded-full bottom-0"></div>
+        <div className="w-32 h-20 bg-white absolute z-1 rounded-full bottom-0"></div>
+        <div className="w-32 h-20 bg-white absolute z-1 rounded-full bottom-0"></div>
  
         <div className="bg-black text-white p-8 md:p-12 md:w-1/2 relative rounded-bl-3xl  overflow-hidden">
           <h1 className="text-2xl md:text-3xl font-medium leading-tight z-10 tracking-tight relative">
@@ -126,23 +121,23 @@ export default function FullScreenSignup () {
           >
             <div>
               <label htmlFor="text" className="block text-sm mb-2">
-                Username
+                Email
               </label>
               <input
                 type="text"
-                id="username"
-                placeholder="Enter your username"
+                id="Email"
+                placeholder="Enter your Email"
                 className={`text-sm w-full py-2 px-3 border rounded-lg focus:outline-none focus:ring-1 bg-white text-black focus:ring-orange-500 ${
-                  usernameError ? "border-red-500" : "border-gray-300"
+                  emailError ? "border-red-500" : "border-gray-300"
                 }`}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                aria-invalid={!!usernameError}
-                aria-describedby="username-error"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                aria-invalid={!!emailError}
+                aria-describedby="Email-error"
               />
-              {usernameError && (
+              {emailError && (
                 <p id="usetrname-error" className="text-red-500 text-xs mt-1">
-                  {usernameError}
+                  {emailError}
                 </p>
               )}
             </div>

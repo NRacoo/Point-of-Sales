@@ -4,12 +4,13 @@ import { getCurrentUser } from '@/lib/get-current-user';
 
 export default async function HomePage() {
   const user = await getCurrentUser();
+  console.log("user: ", user)
 
   if (!user) {
     redirect('/login');
   }
 
-  if (user.role === 'ADMIN') {
+  if (user.role === 'admin') {
     redirect('/admin');
   }
 

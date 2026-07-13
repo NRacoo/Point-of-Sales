@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { ShoppingCart, BarChart3 } from 'lucide-react';
-import type { SessionPayload } from '@/lib/interface/auth';
+import type { SessionPayload } from '@/lib/interface/validate';
 
 interface Props {
   user: SessionPayload | null;
@@ -70,7 +70,7 @@ export function CashierShell({ user, children }: Props) {
               <div className="text-gray-500">{user?.email}</div>
             </div>
 
-            <form action="/api/auth/logout" method="POST">
+            <form action="/api/v1/auth/logout" method="POST">
               <button className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-red-500 hover:text-gray-100 transition-colors">
                 Logout
               </button>

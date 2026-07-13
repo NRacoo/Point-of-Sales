@@ -4,7 +4,7 @@ import { ReactNode, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, ShoppingCart, Package, BarChart3, Settings } from 'lucide-react';
-import type { SessionPayload } from '@/lib/interface/auth';
+import type { SessionPayload } from '@/lib/interface/validate';
 
 interface Props {
   user: SessionPayload | null;
@@ -92,7 +92,7 @@ export function AdminShell({ user, children }: Props) {
               >
                 Batal
               </button>
-              <form action="/api/auth/logout" method="POST" className="flex-1">
+              <form action="/api/v1/auth/logout" method="POST" className="flex-1">
                 <button
                   type="submit"
                   className="w-full py-2.5 rounded-lg bg-orange-500 text-white hover:bg-orange-600"

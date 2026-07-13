@@ -27,6 +27,8 @@ async function main(){
                 phoneNumber:phone,
                 email:email,
                 image:"",
+                token: "",
+                access_token:""
             }
         })
         console.log("admin seeded successfully")

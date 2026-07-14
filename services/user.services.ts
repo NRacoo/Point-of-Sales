@@ -18,6 +18,7 @@ export const UserService = {
         };
         const hashed = await hashPassword(data.password);
 
+
         const user = prisma.user.create({
             data:{
                 fullName:data.fullName,
@@ -40,7 +41,16 @@ export const UserService = {
     },
 
     async findById(id:string){
-        return prisma.user.findUnique({where: { id }})
+        return prisma.user.findUnique({where: { id }, select:{
+            id: true,
+            fullName: true,
+            email: true,
+            phoneNumber: true,
+            image: true,
+            role: true,
+            store: true,
+            storeId: true,
+        }})
     },
 
     async update(id:string, data: Partial<{

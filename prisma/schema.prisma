@@ -38,7 +38,8 @@ model Product {
   categoryId    String
   stock         String
   reorder_level String
-  price         String
+  image         String
+  price         Decimal        @db.Decimal(10, 2)
   status        product_status @default(in_stock)
   last_updated  DateTime       @default(now())
   storeId       String?

@@ -10,11 +10,13 @@
     "seed": "tsx prisma/seed.prisma.ts"
   },
   "dependencies": {
+    "@imagekit/next": "^2.1.5",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "imagekit": "^6.0.0",
     "jose": "^6.2.3",
     "lucide-react": "^0.560.0",
     "next": "^16.2.10",

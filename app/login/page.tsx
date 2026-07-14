@@ -124,8 +124,8 @@ export default function FullScreenSignup () {
                 Email
               </label>
               <input
-                type="text"
-                id="Email"
+                type="email"
+                id="user-email"
                 placeholder="Enter your Email"
                 className={`text-sm w-full py-2 px-3 border rounded-lg focus:outline-none focus:ring-1 bg-white text-black focus:ring-orange-500 ${
                   emailError ? "border-red-500" : "border-gray-300"

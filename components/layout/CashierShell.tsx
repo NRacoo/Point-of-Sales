@@ -4,10 +4,10 @@ import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { ShoppingCart, BarChart3 } from 'lucide-react';
-import type { SessionPayload } from '@/lib/interface/validate';
+import { cashierProps } from '@/lib/interface/user';
 
 interface Props {
-  user: SessionPayload | null;
+  user: cashierProps | null;
   children: ReactNode;
 }
 
@@ -65,7 +65,7 @@ export function CashierShell({ user, children }: Props) {
           <div className="flex items-center gap-3 text-xs">
             <div className="text-right">
               <div className="font-medium text-gray-900">
-                {user?.name ?? 'Cashier'}
+                {user?.fullName ?? 'Cashier'}
               </div>
               <div className="text-gray-500">{user?.email}</div>
             </div>

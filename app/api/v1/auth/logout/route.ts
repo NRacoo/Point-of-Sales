@@ -1,5 +1,6 @@
 import { verifyAccessToken } from '@/lib/auth';
 import { UserService } from '@/services/user.services';
+import { redirect } from 'next/navigation';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
       
     }
   }
-  const res = NextResponse.json({ ok:true });
+  const res = NextResponse.redirect(new URL("/", request.url));
   res.cookies.delete("access_token")
   res.cookies.delete("refresh_token")
   return res

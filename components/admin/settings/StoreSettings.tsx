@@ -1,7 +1,9 @@
+import { useAdmin } from '@/lib/context/adminContext';
 import { Save } from 'lucide-react';
 
 
 export default function StoreSettings() {
+  const { user } = useAdmin()
     return (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h2 className="text-gray-900 mb-6">Store Information</h2>
@@ -10,7 +12,7 @@ export default function StoreSettings() {
                   <label className="block text-gray-700 mb-2">Store Name</label>
                   <input
                     type="text"
-                    defaultValue="Warung madura jaya"
+                    defaultValue={user?.store?.name ?? " "}
                     className="w-full text-gray-500/30 px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
@@ -19,7 +21,7 @@ export default function StoreSettings() {
                   <label className="block text-gray-700 mb-2">Address</label>
                   <textarea
                     rows={3}
-                    defaultValue="123 Main Street, Jakarta"
+                    defaultValue={user?.store?.address ?? " "}
                     className="w-full px-4 py-2.5 text-gray-500/30 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
                   />
                 </div>
@@ -29,7 +31,7 @@ export default function StoreSettings() {
                     <label className="block text-gray-700 mb-2">Phone</label>
                     <input
                       type="tel"
-                      defaultValue="+62 21 1234 5678"
+                      defaultValue={user?.store?.phoneNumber}
                       className="w-full px-4 py-2.5 text-gray-500/30 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>

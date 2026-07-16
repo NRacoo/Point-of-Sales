@@ -28,7 +28,14 @@ async function main(){
                 email:email,
                 image:"",
                 token: "",
-                access_token:""
+                access_token:"",
+                store:{
+                    create:{
+                        name:"Anugerah Jaya",
+                        address:"Jl. Sukabirus",
+                        phoneNumber:"0812345678"
+                    }
+                }
             }
         })
         console.log("admin seeded successfully")

@@ -1,5 +1,5 @@
 import { verifyAccessToken } from '@/lib/auth';
-import { UserService } from '@/services/user.services';
+import { UserService } from '@/services/user.service';
 import { redirect } from 'next/navigation';
 import { NextResponse, type NextRequest } from 'next/server';
 

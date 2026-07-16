@@ -1,5 +1,6 @@
 import { comparePassword, hashPassword, signAccessToken, signRefreshToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma"
+import { ImageKitService } from "./imageKit.service";
 
 export const UserService = {
     async create(data:{
@@ -7,7 +8,7 @@ export const UserService = {
         email:string,
         password:string,
         phoneNumber:string,
-        image:string,
+        image?:string,
         storeId?:string
     }){
         const existUser = await prisma.user.findUnique({
@@ -18,6 +19,11 @@ export const UserService = {
         };
         const hashed = await hashPassword(data.password);
 
+        let imageUrl = ""
+        if(data.image) {
+            const uploaded = await ImageKitService.upload(data.image, `${data.email}-${Date.now()}`);
+            imageUrl = uploaded.url;
+        }
 
         const user = prisma.user.create({
             data:{
@@ -25,7 +31,7 @@ export const UserService = {
                 email:data.email,
                 password:hashed,
                 phoneNumber:data.phoneNumber,
-                image:data.image,
+                image:imageUrl,
                 storeId:data.storeId,
                 token:"",
                 access_token:""
@@ -59,7 +65,12 @@ export const UserService = {
         image:string,
         storeId:string,
     }>){
-        return prisma.user.update({ where: { id }, data })
+        const updatedData: typeof data = {...data};
+        if(data.image){
+            const uploaded = await ImageKitService.upload(data.image, `${id}-${Date.now()}`)
+            updatedData.image = uploaded.url
+        }
+        return prisma.user.update({ where: { id }, data: updatedData })
     },
 
     async delete(id:string){

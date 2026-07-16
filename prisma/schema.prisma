@@ -36,12 +36,13 @@ model Product {
   id            String         @id @default(uuid())
   product_name  String         @unique
   categoryId    String
-  stock         String
-  reorder_level String
+  stock         Int
+  reorder_level Int
   image         String
   price         Decimal        @db.Decimal(10, 2)
   status        product_status @default(in_stock)
   last_updated  DateTime       @default(now())
+  unit          String
   storeId       String?
   orderItem     OrderItem[]
   category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -49,7 +50,7 @@ model Product {
 }
 
 model Category {
-  id            String    @id @default(uuid())
+  id            String    @id @default(uuid()) @unique
   category_name String    @unique
   product       Product[]
 }
@@ -89,7 +90,8 @@ enum order_status {
 
 enum product_status {
   in_stock
-  out_stock
+  out_of_stock
+  low_stock
 }
 
 enum payment_method {

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ProcessPayment } from "@/components/cashier/ProcessPayment";
+import { ProcessPayment } from "@/components/cashier/processpayment";
 
 const CURRENT_ORDER_KEY = "pos.currentOrder";
 

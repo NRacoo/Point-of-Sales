@@ -1,5 +1,5 @@
 import { verifyRefreshToken } from "@/lib/auth";
-import { UserService } from "@/services/user.services";
+import { UserService } from "@/services/user.service";
 import { NextRequest, NextResponse } from "next/server";
 
 

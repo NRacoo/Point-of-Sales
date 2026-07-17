@@ -1,84 +1,38 @@
+import { CategoryService } from "@/services/category.service";
 import { NextRequest, NextResponse } from "next/server";
-import { ProductService } from "@/services/product.service";
 
-interface Params {
-  params: { id: string };
-}
-
-// GET /api/products/:id
-export async function GET(_req: NextRequest, { params }: Params) {
-  try {
-    const product = await ProductService.findById(params.id);
-
-    if (!product) {
-      return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ success: true, data: product });
-  } catch (error) {
-    console.error("[GET /api/products/:id]", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch product" },
-      { status: 500 }
-    );
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const category = await CategoryService.findById(id);
+  if (!category) {
+    return NextResponse.json({ success: false, message: "Category not found" }, { status: 404 });
   }
+  return NextResponse.json({ success: true, data: category }, { status: 200 });
 }
 
-// PATCH /api/products/:id
-export async function PATCH(req: NextRequest, { params }: Params) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const body = await req.json();
-
-    const {
-      product_name,
-      categoryId,
-      stock,
-      reorder_level,
-      price,
-      status,
-      storeId,
-    } = body;
-
-    const product = await ProductService.update(params.id, {
-      product_name,
-      categoryId,
-      stock: stock !== undefined ? Number(stock) : undefined,
-      reorder_level: reorder_level !== undefined ? Number(reorder_level) : undefined,
-      price: price !== undefined ? Number(price) : undefined,
-      status,
-      storeId,
-    });
-
-    return NextResponse.json({ success: true, data: product });
-  } catch (error: any) {
-    console.error("[PATCH /api/products/:id]", error);
-
-    if (error.code === "P2025") {
-      return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
-    }
-
+    const updated = await CategoryService.update(id, body);
+    return NextResponse.json({ success: true, data: updated }, { status: 200 });
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Failed to update product" },
-      { status: 500 }
+      { success: false, message: error instanceof Error ? error.message : "Internal Server Error" },
+      { status: 400 }
     );
   }
 }
 
-// DELETE /api/products/:id
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await ProductService.delete(params.id);
-    return NextResponse.json({ success: true, message: "Product deleted" });
-  } catch (error: any) {
-    console.error("[DELETE /api/products/:id]", error);
-
-    if (error.code === "P2025") {
-      return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
-    }
-
+    const { id } = await params;
+    await CategoryService.delete(id);
+    return NextResponse.json({ success: true, message: "Category deleted" }, { status: 200 });
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Failed to delete product" },
-      { status: 500 }
+      { success: false, message: error instanceof Error ? error.message : "Internal Server Error" },
+      { status: 400 }
     );
   }
 }

@@ -4,16 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { Search, Plus, Pencil, Trash2, AlertCircle, CheckCircle2, X } from 'lucide-react';
 
-interface InventoryItem {
-  id: number;
-  name: string;
-  category: string;
-  stock: number;
-  unit: string;
-  reorderLevel: number;
-  price: number;
-  lastUpdated: string;
-}
+
 
 const mockInventory: InventoryItem[] = [
   { id: 1, name: 'Almond Brown Croissant', category: 'Croissant', stock: 45, unit: 'pcs', reorderLevel: 20, price: 34000, lastUpdated: 'Dec 8, 2024' },

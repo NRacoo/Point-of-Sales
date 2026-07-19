@@ -36,21 +36,21 @@ model Product {
   id            String         @id @default(uuid())
   product_name  String         @unique
   categoryId    String
-  stock         Int
-  reorder_level Int
-  image         String
-  price         Decimal        @db.Decimal(10, 2)
   status        product_status @default(in_stock)
   last_updated  DateTime       @default(now())
-  unit          String
   storeId       String?
+  price         Decimal        @db.Decimal(10, 2)
+  image         String
+  stock         Int
+  reorder_level Int
+  unit          String
   orderItem     OrderItem[]
   category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   store         Store?         @relation(fields: [storeId], references: [id])
 }
 
 model Category {
-  id            String    @id @default(uuid()) @unique
+  id            String    @id @unique @default(uuid())
   category_name String    @unique
   product       Product[]
 }

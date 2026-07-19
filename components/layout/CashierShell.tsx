@@ -71,7 +71,7 @@ export function CashierShell({ user, children }: Props) {
             </div>
 
             <form action="/api/v1/auth/logout" method="POST">
-              <button className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-red-500 hover:text-gray-100 transition-colors">
+              <button className="px-3 py-1.5 rounded-lg border border-gray-200 bg-orange-500 text-white hover:bg-orange-600 hover:text-gray-100 transition-colors">
                 Logout
               </button>
             </form>

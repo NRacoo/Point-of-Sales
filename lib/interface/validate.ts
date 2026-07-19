@@ -5,6 +5,7 @@ import { verifyAccessToken } from '../auth';
 export interface SessionPayload {
   id: string;
   role: UserRole;
+  storeId:string
 }
 
 export async function parseSessionValue(token?: string) : Promise<SessionPayload | null> {
@@ -17,6 +18,7 @@ export async function parseSessionValue(token?: string) : Promise<SessionPayload
     return {
       id: payload.id as string,
       role: payload.role as UserRole,
+      storeId: payload.storeId as string,
     }
   } catch {
     return null

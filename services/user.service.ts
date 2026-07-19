@@ -86,7 +86,7 @@ export const UserService = {
         
         if(!valid) throw new Error("invalid credentials");
 
-        const access_token = signAccessToken( { id: user.id, role: user.role });
+        const access_token = signAccessToken( { id: user.id, role: user.role, storeId: user.storeId ?? undefined});
         const token = signRefreshToken( { id: user.id });
 
         const updated = await prisma.user.update({

@@ -13,8 +13,8 @@ if(!ACCESS_SECRET || !REFRESH_SECRET || !ACCESS_EXPIRATION || !REFRESH_EXPIRATIO
 export const hashPassword = (password: string) => bcrypt.hash(password, 10)
 export const comparePassword = (password: string, hash:string) => bcrypt.compare(password, hash);
 
-export const signAccessToken = (payload : { id : string, role: string}) => jwt.sign(payload, ACCESS_SECRET, {expiresIn: ACCESS_EXPIRATION as SignOptions["expiresIn"]});
+export const signAccessToken = (payload : { id : string, role: string, storeId?: string}) => jwt.sign(payload, ACCESS_SECRET, {expiresIn: ACCESS_EXPIRATION as SignOptions["expiresIn"]});
 export const signRefreshToken = (payload: {id: string}) => jwt.sign(payload, REFRESH_SECRET, {expiresIn: REFRESH_EXPIRATION as SignOptions["expiresIn"]});
 
-export const verifyAccessToken = (token:string) => jwt.verify(token, ACCESS_SECRET) as { id: string, role:string };
+export const verifyAccessToken = (token:string) => jwt.verify(token, ACCESS_SECRET) as { id: string, role:string, storeId: string };
 export const verifyRefreshToken = (token:string) => jwt.verify(token, REFRESH_SECRET) as { id: string }; 

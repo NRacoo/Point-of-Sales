@@ -20,9 +20,6 @@ export const CategoryService = {
 
     async findAll(){
         return prisma.category.findMany({
-            include:{
-                product:true,
-            },
             orderBy:{ category_name: "asc"}
         });
     },

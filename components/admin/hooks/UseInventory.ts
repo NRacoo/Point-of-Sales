@@ -7,7 +7,7 @@ import {
   ProductFormState,
   ProductsResponse,
   emptyForm,
-} from '@/lib/types/inventory';
+} from '@/lib/interface/inventory';
 import type { ToastState } from '../components/Toast';
 
 type ModalMode = 'add' | 'edit';

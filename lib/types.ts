@@ -11,16 +11,6 @@ export interface AppUser {
 
 export type PaymentMethod = 'CASH' | 'EWALLET' | 'QRIS';
 
-export interface Product {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  imageUrl?: string;
-  category?: string;
-  isActive: boolean;
-  
-}
 
 export interface TransactionItem {
   productId: string;

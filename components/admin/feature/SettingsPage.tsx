@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Save, User, Store, Bell, CreditCard, Printer, Shield } from 'lucide-react';
-import ProfileSettings from './settings/ProfileSettings';
-import StoreSettings from './settings/StoreSettings';
-import NotificationSettings from './settings/NotificationSettings';
-import PaymentSettings from './settings/PaymentSettings';
-import PrinterSettings from './settings/PrinterSettings';
-import SecuritySettings from './settings/SecuritySettings';
+import ProfileSettings from '../settings/ProfileSettings';
+import StoreSettings from '../settings/StoreSettings';
+import NotificationSettings from '../settings/NotificationSettings';
+import PaymentSettings from '../settings/PaymentSettings';
+import PrinterSettings from '../settings/PrinterSettings';
+import SecuritySettings from '../settings/SecuritySettings';
 
 type SettingsTab = 'profile' | 'store' | 'notifications' | 'payment' | 'printer' | 'security';
 

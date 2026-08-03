@@ -1,6 +1,5 @@
 import { product_status } from "@/app/generated/prisma/enums";
 import { verifyAccessToken } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { ProductService } from "@/services/product.service";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";

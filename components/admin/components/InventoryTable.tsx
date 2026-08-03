@@ -1,7 +1,7 @@
 'use client';
 
 import { Search, Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
-import { Product, Pagination, STATUS_META } from '@/lib/types/inventory';
+import { Product, Pagination, STATUS_META } from '@/lib/interface/inventory';
 
 interface InventoryTableProps {
   products: Product[];

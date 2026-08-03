@@ -1,4 +1,4 @@
-import { Orders } from '@/components/admin/Orders';
+import { Orders } from '@/components/admin/feature/Orders';
 
 export default function AdminOrdersPage() {
   return <Orders />;

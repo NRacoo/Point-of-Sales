@@ -1,11 +1,11 @@
 'use client';
 
-import { InventoryStats } from './components/InventoryStats';
-import { InventoryTable } from './components/InventoryTable';
-import { ProductFormModal } from './components/ProductFormModal';
-import { ConfirmDialog } from './components/ConfirmDialog';
-import { Toast } from './components/Toast';
-import { useInventory } from './hooks/UseInventory';
+import { InventoryStats } from '../components/InventoryStats';
+import { InventoryTable } from '../components/InventoryTable';
+import { ProductFormModal } from '../components/ProductFormModal';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { Toast } from '../components/Toast';
+import { useInventory } from '../hooks/UseInventory';
 
 interface InventoryProps {
   storeId?: string;

@@ -23,7 +23,7 @@ model User {
 }
 
 model Store {
-  id          String    @id @default(uuid())
+  id          String    @id @default(uuid())@unique
   name        String
   address     String
   phoneNumber String    @unique
@@ -68,6 +68,22 @@ model Order {
   store          Store          @relation(fields: [storeId], references: [id])
   user           User           @relation(fields: [userId], references: [id])
   orderItem      OrderItem[]
+  paymentEvents  PaymentEventLog[]
+}
+
+model PaymentEventLog {
+  id               String           @id @default(uuid())
+  orderId          String
+  method_selected  payment_method
+  method_detected  payment_method?
+  status           iot_event_status @default(awaiting)
+  matched          Boolean?
+  note             String?
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+  order            Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, created_at])
 }
 
 model OrderItem {
@@ -98,6 +114,15 @@ enum payment_method {
   cash
   QRIS
   card
+  e_wallet
+}
+
+enum iot_event_status {
+  awaiting
+  detected
+  confirmed
+  mismatch
+  failed
 }
 
 enum Role {

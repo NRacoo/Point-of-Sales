@@ -17,10 +17,27 @@ async function main(){
             throw new Error("Missing environment variables")
         }
 
+        const cashierName = process.env.CASHIER_FULLNAME ?? "Kasir Satu";
+        const cashierPhone = process.env.CASHIER_PHONE ?? "0812345679";
+        const cashierEmail = process.env.CASHIER_EMAIL ?? "kasir@example.com";
+        const cashierPass = process.env.PASS_CASHIER ?? pass;
 
         const hashPass = await bcrypt.hash(pass, 10)
-        await prisma.user.create({
-            data:{
+
+        const store = await prisma.store.upsert({
+            where: { phoneNumber: "0812345678" },
+            update: {},
+            create: {
+                name: "Anugerah Jaya",
+                address: "Jl. Sukabirus",
+                phoneNumber: "0812345678"
+            }
+        })
+
+        await prisma.user.upsert({
+            where: { email },
+            update: { storeId: store.id, role: Role.admin },
+            create:{
                 fullName:name,
                 password:hashPass,
                 role:Role.admin,
@@ -29,16 +46,28 @@ async function main(){
                 image:"",
                 token: "",
                 access_token:"",
-                store:{
-                    create:{
-                        name:"Anugerah Jaya",
-                        address:"Jl. Sukabirus",
-                        phoneNumber:"0812345678"
-                    }
-                }
+                storeId: store.id
             }
         })
         console.log("admin seeded successfully")
+
+        const hashCashierPass = await bcrypt.hash(cashierPass, 10)
+        await prisma.user.upsert({
+            where: { email: cashierEmail },
+            update: { storeId: store.id, role: Role.cashier },
+            create: {
+                fullName: cashierName,
+                password: hashCashierPass,
+                role: Role.cashier,
+                phoneNumber: cashierPhone,
+                email: cashierEmail,
+                image: "",
+                token: "",
+                access_token: "",
+                storeId: store.id
+            }
+        })
+        console.log(`cashier seeded successfully (store: ${store.id})`)
 }
 
 main()

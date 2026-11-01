@@ -1,12 +1,27 @@
-import { db } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
+import { getCurrentUser } from '@/lib/get-current-user';
 
-export default function CashierStatsPage() {
-  const today = new Date().toISOString().slice(0, 10);
-  const todayTx = db.transactions.filter((tx) =>
-    tx.createdAt.startsWith(today)
-  );
+export default async function CashierStatsPage() {
+  const user = await getCurrentUser();
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const startOfTomorrow = new Date(startOfToday);
+  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+  const todayTx = user?.storeId
+    ? await prisma.order.findMany({
+        where: {
+          storeId: user.storeId,
+          status: 'completed',
+          order_date: { gte: startOfToday, lt: startOfTomorrow },
+        },
+        select: { id: true, total_amount: true },
+      })
+    : [];
+
   const totalToday = todayTx.reduce(
-    (sum, tx) => sum + tx.totalAmount,
+    (sum, tx) => sum + Number(tx.total_amount ?? 0),
     0
   );
 

@@ -7,8 +7,13 @@ import {
   Banknote,
   QrCode,
   CheckCircle,
+  Loader2,
   X,
 } from "lucide-react";
+import { METHOD_LABEL, UI_METHOD_TO_DB } from "@/lib/api/iot";
+import { createOrder, updateOrderStatus } from "@/lib/api/order";
+import { IotDetectionPanel } from "@/components/cashier/IotDetectionPanel";
+import { useIotDetection } from "@/components/cashier/useIotDetection";
 
 type PaymentMethod = "cash" | "card" | "e-wallet" | "qris";
 
@@ -24,6 +29,7 @@ interface ProcessPaymentProps {
   subtotal: number;
   tax: number;
   total: number;
+  customerName?: string;
   onBack: () => void;
   onPaymentComplete: () => void;
 }
@@ -33,6 +39,7 @@ export function ProcessPayment({
   subtotal,
   tax,
   total,
+  customerName = "Walk-in Customer",
   onBack,
   onPaymentComplete,
 }: ProcessPaymentProps) {
@@ -44,24 +51,84 @@ export function ProcessPayment({
   const [cardNumber, setCardNumber] = useState("");
   const [walletPhone, setWalletPhone] = useState("");
   const [showBackConfirm, setShowBackConfirm] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const detection = useIotDetection();
 
   const cashAmount = Number(cashReceived) || 0;
   const change = cashAmount - total;
 
   const quickCashAmounts = [50000, 100000, 150000, 200000, 500000];
 
-  const handlePayment = () => {
+  /**
+   * Memilih metode akan membuat order (status pending) lalu meminta
+   * Raspberry Pi mulai mendeteksi pembayaran. Order dibuat sekali saja,
+   * ganti metode cukup mengirim ulang trigger deteksi.
+   */
+  const handleSelectMethod = async (method: PaymentMethod) => {
+    setSelectedMethod(method);
+    setSubmitError(null);
+    detection.reset();
+
+    if (!orderItems.length) return;
+
+    const dbMethod = UI_METHOD_TO_DB[method];
+
+    try {
+      let id = orderId;
+
+      if (!id) {
+        const order = await createOrder({
+          customer_name: customerName,
+          payment_method: dbMethod,
+          items: orderItems.map((item) => ({
+            productId: item.id,
+            quantity: String(item.quantity),
+          })),
+        });
+        id = order.id;
+        setOrderId(id);
+      }
+
+      await detection.arm(id, dbMethod);
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : "Gagal menyiapkan pembayaran"
+      );
+    }
+  };
+
+  const handlePayment = async () => {
     if (selectedMethod === "cash" && cashAmount < total) {
       alert("Insufficient cash amount");
       return;
     }
 
-    setShowSuccess(true);
+    // Metode terdeteksi berbeda dari pilihan kasir: minta konfirmasi dulu.
+    if (detection.log?.status === "mismatch") {
+      const proceed = confirm(
+        "Metode pembayaran yang terdeteksi perangkat berbeda dengan pilihan kasir. Lanjutkan menyelesaikan transaksi?"
+      );
+      if (!proceed) return;
+    }
 
-  
-    setTimeout(() => {
-      onPaymentComplete();
-    }, 2000);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      if (orderId) {
+        await updateOrderStatus(orderId, "completed");
+      }
+      setShowSuccess(true);
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : "Gagal menyelesaikan pembayaran"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleQuickCash = (amount: number) => {
@@ -106,6 +173,18 @@ export function ProcessPayment({
                 </span>
               </div>
             )}
+            {detection.log?.method_detected && (
+              <div className="flex justify-between pt-2 border-t border-gray-200">
+                <span className="text-gray-600">Detected (IoT)</span>
+                <span
+                  className={
+                    detection.log.matched ? "text-green-600" : "text-yellow-600"
+                  }
+                >
+                  {METHOD_LABEL[detection.log.method_detected]}
+                </span>
+              </div>
+            )}
           </div>
 
           <button
@@ -144,7 +223,7 @@ export function ProcessPayment({
 
               <div className="grid grid-cols-2 gap-4">
                 <button
-                  onClick={() => setSelectedMethod("cash")}
+                  onClick={() => handleSelectMethod("cash")}
                   className={`p-6 rounded-xl border-2 transition-all ${
                     selectedMethod === "cash"
                       ? "border-orange-500 bg-orange-50"
@@ -163,7 +242,7 @@ export function ProcessPayment({
                 </button>
 
                 <button
-                  onClick={() => setSelectedMethod("card")}
+                  onClick={() => handleSelectMethod("card")}
                   className={`p-6 rounded-xl border-2 transition-all ${
                     selectedMethod === "card"
                       ? "border-orange-500 bg-orange-50"
@@ -182,7 +261,7 @@ export function ProcessPayment({
                 </button>
 
                 <button
-                  onClick={() => setSelectedMethod("e-wallet")}
+                  onClick={() => handleSelectMethod("e-wallet")}
                   className={`p-6 rounded-xl border-2 transition-all ${
                     selectedMethod === "e-wallet"
                       ? "border-orange-500 bg-orange-50"
@@ -201,7 +280,7 @@ export function ProcessPayment({
                 </button>
 
                 <button
-                  onClick={() => setSelectedMethod("qris")}
+                  onClick={() => handleSelectMethod("qris")}
                   className={`p-6 rounded-xl border-2 transition-all ${
                     selectedMethod === "qris"
                       ? "border-orange-500 bg-orange-50"
@@ -219,7 +298,34 @@ export function ProcessPayment({
                   <div className="text-sm text-gray-500">Scan QR code</div>
                 </button>
               </div>
+
+              {selectedMethod && (
+                <div className="mt-4 space-y-3">
+                  {detection.isArming && (
+                    <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
+                      <p className="text-sm text-gray-700">
+                        Menyiapkan deteksi pembayaran...
+                      </p>
+                    </div>
+                  )}
+
+                  {!detection.isArming && (
+                    <IotDetectionPanel
+                      log={detection.log}
+                      error={detection.error}
+                      onRetry={() => handleSelectMethod(selectedMethod)}
+                    />
+                  )}
+                </div>
+              )}
             </div>
+
+            {submitError && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                {submitError}
+              </div>
+            )}
 
             {/* Payment Details Based on Method */}
             {selectedMethod === "cash" && (
@@ -444,11 +550,15 @@ export function ProcessPayment({
                 onClick={handlePayment}
                 disabled={
                   !selectedMethod ||
+                  isSubmitting ||
                   (selectedMethod === "cash" && cashAmount < total)
                 }
-                className="w-full mt-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="w-full mt-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
-                {selectedMethod === "cash" && cashAmount < total
+                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isSubmitting
+                  ? "Processing..."
+                  : selectedMethod === "cash" && cashAmount < total
                   ? "Insufficient Amount"
                   : "Complete Payment"}
               </button>
